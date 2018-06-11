@@ -3,11 +3,14 @@ import yaml
 import xmltodict
 import requests
 import random
+import sys
 from tweepy import OAuthHandler
 from tweepy import API
-from time import sleep
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-#Keys and secrets excluded for security.
+schedule = BlockingScheduler()
+
+#Remove keys and secrets.
 consumer_key = ""
 consumer_secret = ""
 access_token = ""
@@ -16,6 +19,8 @@ access_token_secret = ""
 auth = OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = API(auth)
+print("Starting up the app!")
+sys.stdout.flush()
 
 class Settings:
     def __init__(self, yaml_file):
@@ -23,6 +28,8 @@ class Settings:
         self.collections = yaml_file['collections']
     def grab_random_collection(self):
         return random.choice(self.collections)
+
+
 class Collection:
     def __init__(self, collection, provider, metadata_format="mods"):
         self.name = collection
@@ -63,6 +70,8 @@ class Collection:
             self.populate()
     def choose_random_record(self):
         return random.choice(self.records)
+
+
 class Record:
     def __init__(self, contents):
         self.contents = contents
@@ -76,14 +85,20 @@ class Record:
             for url in self.contents["metadata"]["mods"]["location"]['url']:
                 if url["@access"] == "object in context":
                     self.object_in_context = url["#text"]
-if __name__ == "__main__":
+
+@schedule.scheduled_job('cron', day_of_week='mon-sun', hour=18, minute=38)
+def scheduled_job():
+    print("Firing scheduled job.")
     settings = yaml.load(open("settings.yml", "r"))
     my_settings = Settings(settings)
     new_collection = Collection(my_settings.grab_random_collection(), my_settings.provider)
     is_bad = new_collection.check_endpoint()
     if is_bad is False:
-        new_collection.populate()
-        x = new_collection.choose_random_record()
-        tweet = (f"{x['title']} - Find it at: {x['url']}")
-        api.update_status(tweet)
-        sleep(86400)
+            new_collection.populate()
+            x = new_collection.choose_random_record()
+            tweet = (f"{x['title']} - Find it at: {x['url']}")
+            print(tweet)
+            api.update_status(tweet)
+    sys.stdout.flush()
+
+schedule.start()
