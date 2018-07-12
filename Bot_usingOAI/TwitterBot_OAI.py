@@ -10,7 +10,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 schedule = BlockingScheduler()
 
-#Remove keys and secrets.
+# Remove keys and secrets.
 consumer_key = ""
 consumer_secret = ""
 access_token = ""
@@ -22,10 +22,12 @@ api = API(auth)
 print("Starting up the app!")
 sys.stdout.flush()
 
+
 class Settings:
     def __init__(self, yaml_file):
         self.provider = yaml_file['provider']
         self.collections = yaml_file['collections']
+
     def grab_random_collection(self):
         return random.choice(self.collections)
 
@@ -39,8 +41,10 @@ class Collection:
         self.size = 0
         self.harvest_string = f"{self.provider}?verb=ListRecords&set={self.name}&metadataPrefix={self.metadata}"
         self.records = []
+
     def __repr__(self):
         return f"The {self.name} collection."
+
     def check_endpoint(self):
         r = requests.get(f"{self.provider}?verb=ListRecords&set={self.name}&metadataPrefix={self.metadata}")
         document = etree.fromstring(r.text.encode("utf-8"))
@@ -49,6 +53,7 @@ class Collection:
             return True
         else:
             return False
+
     def populate(self):
         r = requests.get(f"{self.harvest_string}")
         document = etree.fromstring(r.text.encode("utf-8"))
@@ -68,6 +73,7 @@ class Collection:
         if self.token is not None:
             self.harvest_string = f"{self.provider}?verb=ListRecords{self.token}"
             self.populate()
+
     def choose_random_record(self):
         return random.choice(self.records)
 
@@ -77,14 +83,20 @@ class Record:
         self.contents = contents
         self.title = None
         self.object_in_context = None
+
     def get_title(self):
-        if type(self.contents["metadata"]["mods"]["titleInfo"]["title"]) is str:
-            self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
+        try:
+            if type(self.contents["metadata"]["mods"]["titleInfo"]["title"]) is str:
+                self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
+        except TypeError:
+            print("Multiple Titles Detected")
+            
     def get_object_in_context(self):
         if self.contents["metadata"]["mods"]["location"]['url']:
             for url in self.contents["metadata"]["mods"]["location"]['url']:
                 if url["@access"] == "object in context":
                     self.object_in_context = url["#text"]
+
 
 @schedule.scheduled_job('cron', day_of_week='mon-sun', hour=18, minute=38)
 def scheduled_job():
@@ -94,11 +106,12 @@ def scheduled_job():
     new_collection = Collection(my_settings.grab_random_collection(), my_settings.provider)
     is_bad = new_collection.check_endpoint()
     if is_bad is False:
-            new_collection.populate()
-            x = new_collection.choose_random_record()
-            tweet = (f"{x['title']} - Find it at: {x['url']}")
-            print(tweet)
-            api.update_status(tweet)
+        new_collection.populate()
+        x = new_collection.choose_random_record()
+        tweet = (f"{x['title']} - Find it at: {x['url']}")
+        print(tweet)
+        api.update_status(tweet)
     sys.stdout.flush()
+
 
 schedule.start()
