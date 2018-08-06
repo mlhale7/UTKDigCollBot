@@ -85,10 +85,15 @@ class Record:
         self.object_in_context = None
 
     def get_title(self):
-        if type(self.contents["metadata"]["mods"]["titleInfo"]) is dict:
+        if type(self.contents["metadata"]["mods"]["titleInfo"]) is collections.OrderedDict:
             self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
+            print(f"titleInfo is an ordered dict: {self.title}")
         elif type(self.contents["metadata"]["mods"]["titleInfo"]) is list:
             self.title = self.contents["metadata"]["mods"]["titleInfo"][0]["title"]
+            print(f"titleInfo is an ordered list: {self.title}")
+        else:
+            print(f"titleInfo was not an OrderedDict or a list.  "
+                  f"It was a {type(self.contents['metadata']['mods']['titleInfo'])}.")
 
     def get_object_in_context(self):
         if self.contents["metadata"]["mods"]["location"]['url']:
