@@ -78,8 +78,10 @@ class Record:
         self.title = None
         self.object_in_context = None
     def get_title(self):
-        if type(self.contents["metadata"]["mods"]["titleInfo"]["title"]) is str:
+        if type(self.contents["metadata"]["mods"]["titleInfo"]) is dict:
             self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
+        elif type(self.contents["metadata"]["mods"]["titleInfo"]) is list:
+            self.title = self.contents["metadata"]["mods"]["titleInfo"][0]["title"]
     def get_object_in_context(self):
         if self.contents["metadata"]["mods"]["location"]['url']:
             for url in self.contents["metadata"]["mods"]["location"]['url']:
