@@ -78,15 +78,25 @@ class Record:
         self.title = None
         self.object_in_context = None
     def get_title(self):
+<<<<<<< HEAD
         if type(self.contents["metadata"]["mods"]["titleInfo"]) is dict:
             self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
         elif type(self.contents["metadata"]["mods"]["titleInfo"]) is list:
             self.title = self.contents["metadata"]["mods"]["titleInfo"][0]["title"]
+=======
+        try:
+            if type(self.contents["metadata"]["mods"]["titleInfo"]["title"]) is str:
+                self.title = self.contents["metadata"]["mods"]["titleInfo"]["title"]
+        except TypeError:
+            print("Multiple Titles Detected")
+            
+>>>>>>> 16556de78ab2527268749e010c9b0b8c73df03f5
     def get_object_in_context(self):
         if self.contents["metadata"]["mods"]["location"]['url']:
             for url in self.contents["metadata"]["mods"]["location"]['url']:
                 if url["@access"] == "object in context":
                     self.object_in_context = url["#text"]
+
 
 @schedule.scheduled_job('cron', day_of_week='mon-sun', hour=18, minute=38)
 def scheduled_job():
@@ -96,11 +106,7 @@ def scheduled_job():
     new_collection = Collection(my_settings.grab_random_collection(), my_settings.provider)
     is_bad = new_collection.check_endpoint()
     if is_bad is False:
-            new_collection.populate()
-            x = new_collection.choose_random_record()
-            tweet = (f"{x['title']} - Find it at: {x['url']}")
-            print(tweet)
-            api.update_status(tweet)
     sys.stdout.flush()
+
 
 schedule.start()
