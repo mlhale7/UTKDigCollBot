@@ -1,5 +1,5 @@
 # UTKDigCollBot
-Code for a Twitterbot (@UTKDigCollBot)[https://twitter.com/UTKDigCollBot] for UTK's digital collections
+Code for a Twitterbot [@UTKDigCollBot](https://twitter.com/UTKDigCollBot) for UTK's digital collections
 
 This repository shares code that supports two methods of implementing a Twitter Bot for the University of Tennessee's digital collections. One takes a static JSON file of links pulled using an OAI harvester and randomized to create Twitter content (Bot_usingJSON). The second pulls a random record from UTK's OAI endpoint, excluding any sets that share thumbnails for their Open Graph image tags (og:image) since these images appear grainy on Twitter.
 
