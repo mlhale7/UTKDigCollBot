@@ -1,15 +1,24 @@
 provider: "http://dloai.lib.utk.edu/cgi-bin/XMLFile/dlmodsoai/oai.pl"
 collections:
 - acwiley
+- adams
+- arrsimple
 - bcpl
+- cDanielCartoon
 - derris
 - egypt
 - gamble
 - heilman
 - kefauver
 - kintner
+- knoxgardens
 - mpabaker
 - roth
+- ruskin
+- tenncities
+- thompson
 - sanborn
 - volvoices
 - vpmoore
+- wderfilms
+- webster
