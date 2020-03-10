@@ -1,17 +1,21 @@
 provider: "http://dloai.lib.utk.edu/cgi-bin/XMLFile/dlmodsoai/oai.pl"
 collections:
+- 3d
 - acwiley
 - adams
+- arrpgimg
 - arrsimple
 - bcpl
 - cDanielCartoon
 - derris
 - egypt
 - gamble
+- garner
 - heilman
 - kefauver
 - kintner
 - knoxgardens
+- marchingband
 - mpabaker
 - roth
 - ruskin
@@ -20,5 +24,6 @@ collections:
 - sanborn
 - volvoices
 - vpmoore
+- wcc
 - wderfilms
 - webster
